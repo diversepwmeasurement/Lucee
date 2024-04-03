@@ -1,30 +1,36 @@
-name: Quick Build, Prime Maven Cache
-
-on: [workflow_dispatch]
-
 jobs:
   build:
-
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     steps:
-    - uses: actions/checkout@v2
-    - name: Set up JDK 11
+    - continue-on-error: true
+      uses: actions/checkout@v2
+    - continue-on-error: true
+      name: Set up JDK 11
       uses: actions/setup-java@v2
       with:
+        distribution: adopt
         java-version: '11'
-        distribution: 'adopt' 
-    - name: Cache Lucee extensions 
+    - continue-on-error: true
+      name: Cache Lucee extensions
       uses: actions/cache@v2
       with:
-        path: ~/work/Lucee/Lucee/cache/
         key: lucee-extensions
+        path: ~/work/Lucee/Lucee/cache/
         restore-keys: lucee-extensions
-    - name: Cache Maven packages
+    - continue-on-error: true
+      name: Cache Maven packages
       uses: actions/cache@v2
       with:
-        path: |
-          ~/.m2/repository/*
-          !~/.m2/repository/org/lucee/lucee/
         key: ${{ runner.os }}-m2
-    - name: Build Lucee with Maven
-      run: ant -noinput -buildfile loader/build.xml quick 
+        path: '~/.m2/repository/*
+
+          !~/.m2/repository/org/lucee/lucee/
+
+          '
+    - continue-on-error: true
+      name: Build Lucee with Maven
+      run: ant -noinput -buildfile loader/build.xml quick
+name: Quick Build, Prime Maven Cache
+on:
+  repository_dispatch:
+    types: trigger-ga___maven-cache.yml
